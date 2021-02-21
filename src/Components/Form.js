@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import * as yup from 'yup';
 import axios from 'axios';
+import {Form} from './Styles';
 
 const PizzaBuilder = () => {
   const initialFormState = {
@@ -14,10 +15,11 @@ const PizzaBuilder = () => {
   }
 
   const [formState, setFormState] = useState(initialFormState);
+  const [errors, setErrors] = useState();
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [post, setPost] = useState([]);
 
-  const formSchema = Yup.object().shape({
+  const formSchema = yup.object().shape({
     name: yup.string().required('name is a required field').min(2, 'name must be at least two characters long'),
     size: yup.string().oneOf(['Small', 'Medium', 'Large'], 'size of pizza is required'),
     pepperoni: yup.boolean().optional(),
@@ -28,7 +30,7 @@ const PizzaBuilder = () => {
   })
 
   const setFormErrors = (name, value) => {
-    yup.reach(schema, name).validate(value)
+    yup.reach(formSchema, name).validate(value)
     .then( () => setErrors({...errors, [name]: ''}))
     .catch(err => setErrors({...errors, [name]: err.errors[0]}))
   }
@@ -36,7 +38,7 @@ const PizzaBuilder = () => {
   const inputChange = event => {
     const { checked, value, name, type } = event.target
     const valueChecked = type === 'checkbox' ? checked : value
-    setFormErrors(name, valueChekced)
+    setFormErrors(name, valueChecked)
     setFormState({...formState, [name]: valueChecked})
   }
 
@@ -141,5 +143,7 @@ const PizzaBuilder = () => {
       </div>
       </Form>
     </form>
-  )
+  );
 }
+
+export default PizzaBuilder;
