@@ -11,9 +11,9 @@ const App = () => {
         <Link to="/">
           <button>Home</button>
         </Link>
-        <button>Contact</button>
+          <button>Contact</button>
         <Switch>
-          <Route path="/Pizza" component={PizzaBuilder} />
+          <Route path="/pizza" component={PizzaBuilder} />
           <Route path="/" component={Home} />
         </Switch>
     </Body>
