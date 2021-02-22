@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import * as yup from 'yup';
+import * as Yup from 'yup';
 import axios from 'axios';
 import {Form} from './Styles';
 
@@ -19,34 +19,44 @@ const PizzaBuilder = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [post, setPost] = useState([]);
 
-  const formSchema = yup.object().shape({
-    name: yup.string().required('name is a required field').min(2, 'name must be at least two characters long'),
-    size: yup.string().oneOf(['Small', 'Medium', 'Large'], 'size of pizza is required'),
-    pepperoni: yup.boolean().optional(),
-    sausage: yup.boolean().optional(),
-    mushroom: yup.boolean().optional(),
-    peppers: yup.boolean().optional(),
-    special: yup.string().notRequired,
+  const formSchema = Yup.object().shape({
+    name: Yup.string().required('name is a required field').min(2, 'name must be at least two characters long'),
+    size: Yup.string().oneOf(['Small', 'Medium', 'Large'], 'size of pizza is required'),
+    pepperoni: Yup.boolean().optional(),
+    sausage: Yup.boolean().optional(),
+    mushroom: Yup.boolean().optional(),
+    peppers: Yup.boolean().optional(),
+    special: Yup.string().notRequired(),
   })
 
-  const setFormErrors = (name, value) => {
-    yup.reach(formSchema, name).validate(value)
-    .then( () => setErrors({...errors, [name]: ''}))
-    .catch(err => setErrors({...errors, [name]: err.errors[0]}))
-  }
+  const validateChange = event => {
+    Yup
+        .reach(formSchema, event.target.name)
+        .validate(event.target.value)
+        .then(valid => {
+        setErrors({ ...errors, [event.target.name]: "" });
+    })
+    .catch(err => {
+        console.log("somethings wrong here", err);
+        setErrors({ ...errors, [event.target.name]: err.errors[0] });
+    });
+};
 
   const inputChange = event => {
-    const { checked, value, name, type } = event.target
-    const valueChecked = type === 'checkbox' ? checked : value
-    setFormErrors(name, valueChecked)
-    setFormState({...formState, [name]: valueChecked})
-  }
+    console.log("There's been an input change", event.target.value);
+    event.persist();
+    const newFormData = {
+      ...formState, [event.target.name] : event.target.type === "checkbox" ? event.target.checked : event.target.value
+    };
+    validateChange(event);
+    setFormState(newFormData);
+  };
 
   const formSubmit = event => {
     event.preventDefault()
     axios.post('https://reqres.in/api/users', formState)
       .then(response => {
-        setPost(JSON.stringify(response.data, null, 8))
+        setPost(JSON.stringify(response.data, null, 2))
         console.log('success', response)
       })
       .catch(err => {
