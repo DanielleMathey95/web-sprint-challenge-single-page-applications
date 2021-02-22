@@ -80,6 +80,7 @@ const PizzaBuilder = () => {
             type="text"
             onChange={inputChange}
             value={formState.name}
+            data-cy="name"
           />
         </label>
 
@@ -146,7 +147,7 @@ const PizzaBuilder = () => {
           value={formState.special} />
       </label>
 
-      <button disabled={isButtonDisabled}>Place Your Order</button>
+      <button disabled={isButtonDisabled} data-cy="submitButton">Place Your Order</button>
 
       <div className="order-details">
         {post}
